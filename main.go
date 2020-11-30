@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
@@ -73,8 +74,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "Ping!")
 	}
 
-	if m.Content == "corona" {
-		coronaInfo, _ := coronaVirus()
-		s.ChannelMessageSend(m.ChannelID, "Informacao sobre corona em "+coronaInfo.State+"\nCasos: "+strconv.Itoa(coronaInfo.Cases))
+	if strings.HasPrefix(m.Content, "!corona world") {
+		worldInfo, _ := allCountriesCorona()
+
+		s.ChannelMessageSend(m.ChannelID, "```diff\nInformacao sobre corona no Mundo\n- Casos:\t\t"+
+			strconv.Itoa(worldInfo.Cases)+
+			"\n- Mortes:\t\t"+strconv.Itoa(worldInfo.Deaths)+
+			"\n+ Recuperados:\t"+strconv.Itoa(worldInfo.Recovered)+
+			"\n```")
 	}
 }
