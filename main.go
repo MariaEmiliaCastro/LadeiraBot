@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
@@ -70,5 +71,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// If the message is "pong" reply with "Ping!"
 	if m.Content == "pong" {
 		s.ChannelMessageSend(m.ChannelID, "Ping!")
+	}
+
+	if m.Content == "corona" {
+		coronaInfo, _ := coronaVirus()
+		s.ChannelMessageSend(m.ChannelID, "Informacao sobre corona em "+coronaInfo.State+"\nCasos: "+strconv.Itoa(coronaInfo.Cases))
 	}
 }
