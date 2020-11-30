@@ -64,7 +64,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	// Se a mensagem for "!ladeira", responder com "abaixo!"
-	if m.Content == "ladeira" {
+	if m.Content == "!ladeira" {
 		s.ChannelMessageSend(m.ChannelID, "abaixo!")
 	}
 
