@@ -6,17 +6,6 @@ import (
 	"net/http"
 )
 
-type CoronaResponse struct {
-	Uid      string
-	Uf       string
-	State    string
-	Cases    int
-	Deaths   int
-	Suspects int
-	Refuses  int
-	Datetime string
-}
-
 type CountryInformation struct {
 	Country    string
 	Cases      int
@@ -39,13 +28,6 @@ func GETRequest(url string) (string, error) {
 	body, err := ioutil.ReadAll(resp.Body)
 	strBody := string(body)
 	return strBody, nil
-}
-
-func coronaVirus() (CoronaResponse, error) {
-	strBody, _ := GETRequest("https://covid19-brazil-api.now.sh/api/report/v1/brazil/uf/sp")
-	var jsonResp CoronaResponse
-	json.Unmarshal([]byte(strBody), &jsonResp)
-	return jsonResp, nil
 }
 
 func allCountriesCorona() (CountryInformation, error) {
