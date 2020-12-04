@@ -89,6 +89,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "abaixo!")
 	}
 
+	if m.Content == "!sleep" {
+		s.ChannelMessageSend(m.ChannelID, "Boa noite, xuxu!")
+	}
+
 
 	if strings.HasPrefix(m.Content, "!corona"){
 
@@ -107,7 +111,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					"\n+ Recuperados:\t"+strconv.Itoa(worldInfo.Recovered)+
 					"\n```")
 				}else{
-					s.ChannelMessageSend(m.ChannelID,"Lista de comandos.... quem sabe... Depois faço essa formatação")
+					s.ChannelMessageSend(m.ChannelID,"**Comandos atuais:**\n\n***`corona`*** - Retorna informações sobre o corona no Brasil.\n***`corona country <countryName>`*** - Retorna informações sobre o corona ao redor do mundo.\n***`corona state <uf>`*** - Retorna informações sobre o corona de um estado específico.\n***`corona country <countryName>`*** - Retorna informações sobre o corona de um país específico. O nome do país deve ser digitado em inglês.\n***`corona help`*** - Lista todos os comandos do bot.\n\neg: `!corona world`")
 					
 				}
 
