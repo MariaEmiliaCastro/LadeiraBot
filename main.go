@@ -4,13 +4,16 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"reflect"
 	"os/signal"
+	"strconv"
+	"strings"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
 )
 
-// Variables used for command line parameters
+// Variavel utilizada para os parametros de linha de comando
 var (
 	Token string
 )
@@ -21,54 +24,117 @@ func init() {
 	flag.Parse()
 }
 
+//baseado nisso aqui https://golangcode.com/check-if-element-exists-in-slice/
+func Find(arrayType interface{}, item interface{}) bool {
+	arr := reflect.ValueOf(arrayType)
+
+	if arr.Kind() != reflect.Array {
+		return false
+	}
+
+	for i := 0; i < arr.Len(); i++ {
+		if arr.Index(i).Interface() == item {
+			return true
+		}
+	}
+
+	return false
+}
+
 func main() {
 
-	// Create a new Discord session using the provided bot token.
+	// Cria nova sessão do bot no discord utilizando o token.
 	dg, err := discordgo.New("Bot " + Token)
 	if err != nil {
 		fmt.Println("error creating Discord session,", err)
 		return
 	}
 
-	// Register the messageCreate func as a callback for MessageCreate events.
+	// Registra messageCreate func como um callback para eventos gerados por MessageCreate.
 	dg.AddHandler(messageCreate)
 
-	// In this example, we only care about receiving message events.
+	// Evento de recebimento de mensagens
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages)
 
-	// Open a websocket connection to Discord and begin listening.
+	// Abre uma conexão websocket com o Discord e inicia a escuta.
 	err = dg.Open()
 	if err != nil {
 		fmt.Println("error opening connection,", err)
 		return
 	}
 
-	// Wait here until CTRL-C or other term signal is received.
+	// Fica aqui até o usuário digitar CTRL-C no console para encerrar a sessão.
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
 
-	// Cleanly close down the Discord session.
+	// Fecha a sessão do Discord de maneira limpa.
 	dg.Close()
 }
 
-// This function will be called (due to AddHandler above) every time a new
-// message is created on any channel that the authenticated bot has access to.
+// Esta função será chamada sempre que um novo evento de mensagem (addHandler acima) ocorre nos channel que o bot tem acesso
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+
+	comandos := [...]string{"world","country","states","help"}
+	//estados := [...]string{"AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RO", "RS", "RR", "SC", "SE", "SP", "TO"}
 
 	// Ignore all messages created by the bot itself
 	// This isn't required in this specific example but it's a good practice.
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
-	// If the message is "ping" reply with "Pong!"
-	if m.Content == "ping" {
-		s.ChannelMessageSend(m.ChannelID, "Pong!")
+	// Se a mensagem for "!ladeira", responder com "abaixo!"
+	if m.Content == "!ladeira" {
+		s.ChannelMessageSend(m.ChannelID, "abaixo!")
 	}
 
-	// If the message is "pong" reply with "Ping!"
-	if m.Content == "pong" {
-		s.ChannelMessageSend(m.ChannelID, "Ping!")
+
+	if strings.HasPrefix(m.Content, "!corona"){
+
+		query:=strings.Split(m.Content, " ")
+
+		if len(query) >1 { 
+			if(!Find(comandos, query[1])){
+				s.ChannelMessageSend(m.ChannelID, "Comando não encontrado! Digite `!corona help` para verificar os comandos disponíveis.")
+			}else if len(query)==2{
+
+				if (query[1]=="world") {
+					worldInfo, _ := allCountriesCorona()
+					s.ChannelMessageSend(m.ChannelID, "```diff\nInformacao sobre corona no Mundo\n- Casos:\t\t"+
+					strconv.Itoa(worldInfo.Cases)+
+					"\n- Mortes:\t\t"+strconv.Itoa(worldInfo.Deaths)+
+					"\n+ Recuperados:\t"+strconv.Itoa(worldInfo.Recovered)+
+					"\n```")
+				}else{
+					s.ChannelMessageSend(m.ChannelID,"Lista de comandos.... quem sabe... Depois faço essa formatação")
+					
+				}
+
+			}else if len(query)==3{
+
+				if (query[1]=="country"){
+					queryData, _ := getCountry(query[2])
+					s.ChannelMessageSend(m.ChannelID, "```diff\n"+queryData.Country+" - Informações sobre corona no país.\n- Casos:\t\t"+
+					strconv.Itoa(queryData.Cases)+
+					"\n- Mortes:\t\t"+strconv.Itoa(queryData.Deaths)+
+					"\n+ Recuperados:\t"+strconv.Itoa(queryData.Recovered)+
+					"\n```")
+				}
+
+
+			}
+
+		}else {
+
+			queryData, _ := getCountry("brazil")
+			s.ChannelMessageSend(m.ChannelID, "```diff\nInformacao sobre corona no Brasil\n- Casos:\t\t"+
+			strconv.Itoa(queryData.Cases)+
+			"\n- Mortes:\t\t"+strconv.Itoa(queryData.Deaths)+
+			"\n+ Recuperados:\t"+strconv.Itoa(queryData.Recovered)+
+			"\n```")
+			
+		}
+
 	}
 }
