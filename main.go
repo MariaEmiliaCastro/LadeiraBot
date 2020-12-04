@@ -76,7 +76,7 @@ func main() {
 // Esta função será chamada sempre que um novo evento de mensagem (addHandler acima) ocorre nos channel que o bot tem acesso
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-	comandos := [...]string{"world","country","states","help"}
+	comandos := [...]string{"world","country","state","help"}
 	//estados := [...]string{"AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RO", "RS", "RR", "SC", "SE", "SP", "TO"}
 
 	// Ignore all messages created by the bot itself
@@ -84,13 +84,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
-	// Se a mensagem for "!ladeira", responder com "abaixo!"
-	if m.Content == "!ladeira" {
-		s.ChannelMessageSend(m.ChannelID, "abaixo!")
-	}
 
-	if m.Content == "!sleep" {
-		s.ChannelMessageSend(m.ChannelID, "Boa noite, xuxu!")
+
+	if m.Content == "!cruzeiro" {
+		s.ChannelMessageSend(m.ChannelID, "***É o melhor time de todos! :blue_heart:***")
 	}
 
 
@@ -124,7 +121,17 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					"\n- Mortes:\t\t"+strconv.Itoa(queryData.Deaths)+
 					"\n+ Recuperados:\t"+strconv.Itoa(queryData.Recovered)+
 					"\n```")
+				}else if (query[1]=="state"){
+					queryData, _ := getState(query[2])
+					s.ChannelMessageSend(m.ChannelID, "```diff\n"+queryData.State+" - Informações sobre corona no estado.\n- Casos:\t\t"+
+					strconv.Itoa(queryData.Cases)+
+					"\n- Mortes:\t\t"+strconv.Itoa(queryData.Deaths)+
+					"\n+ Suspeitos:\t"+strconv.Itoa(queryData.Suspects)+
+					"\n```")
+
 				}
+
+
 
 
 			}
