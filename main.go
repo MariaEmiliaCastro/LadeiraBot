@@ -149,10 +149,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 
-	// Se a mensagem for "!ladeira", responder com "abaixo!"
-	if m.Content == "!ladeira" {
-		s.ChannelMessageSend(m.ChannelID, "abaixo!")
-	}
 
 	if strings.HasPrefix(m.Content, "!corona world") {
 		worldInfo, _ := allCountriesCorona()
