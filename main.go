@@ -86,6 +86,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 
+
 	if m.Content == "!cruzeiro" {
 		s.ChannelMessageSend(m.ChannelID, "***É o melhor time de todos! :blue_heart:***")
 	}
@@ -147,5 +148,19 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			
 		}
 
+
+	// Se a mensagem for "!ladeira", responder com "abaixo!"
+	if m.Content == "!ladeira" {
+		s.ChannelMessageSend(m.ChannelID, "abaixo!")
+	}
+
+	if strings.HasPrefix(m.Content, "!corona world") {
+		worldInfo, _ := allCountriesCorona()
+
+		s.ChannelMessageSend(m.ChannelID, "```diff\nInformacao sobre corona no Mundo\n- Casos:\t\t"+
+			strconv.Itoa(worldInfo.Cases)+
+			"\n- Mortes:\t\t"+strconv.Itoa(worldInfo.Deaths)+
+			"\n+ Recuperados:\t"+strconv.Itoa(worldInfo.Recovered)+
+			"\n```")
 	}
 }

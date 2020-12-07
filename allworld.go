@@ -15,6 +15,7 @@ type CountryInformation struct {
 	Updated_at string
 }
 
+
 type StateInformation struct {
 	State      string
 	UF		   string		
@@ -62,6 +63,7 @@ func allCountriesCorona() (CountryInformation, error) {
 	return world, nil
 }
 
+
 func getCountry(place string) (CountryInformation, error) {
 
 	if place == "" {
@@ -101,6 +103,7 @@ func getState(place string) (StateInformation, error) {
 
 
 }
+
 
 
 
